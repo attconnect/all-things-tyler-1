@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Things Tyler – Business Concierge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --att-green:     #2D6A4F;
+      --att-green-lt:  #40916C;
+      --att-gold:      #C8972B;
+      --att-cream:     #FAF8F4;
+      --att-ink:       #1A1A1A;
+      --att-muted:     #6B7280;
+      --att-border:    #E5E0D8;
+      --att-card-bg:   #FFFFFF;
+      --att-shadow:    0 2px 12px rgba(0,0,0,0.07);
+      --att-radius:    12px;
+      --font-display:  'Playfair Display', Georgia, serif;
+      --font-body:     'Inter', system-ui, sans-serif;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--att-cream);
+      color: var(--att-ink);
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    /* ── Header ── */
+    .att-header {
+      background: var(--att-green);
+      padding: 28px 24px 24px;
+      text-align: center;
+    }
+
+    .att-header__eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 6px;
+    }
+
+    .att-header__title {
+      font-family: var(--font-display);
+      font-size: clamp(22px, 5vw, 30px);
+      color: #ffffff;
+      line-height: 1.2;
+      margin-bottom: 6px;
+    }
+
+    .att-header__sub {
+      font-size: 13px;
+      color: rgba(255,255,255,0.7);
+    }
+
+    /* ── Search Box ── */
+    .att-search-wrap {
+      padding: 20px 16px 0;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .att-search-form {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .att-search-input {
+      flex: 1;
+      padding: 14px 18px;
+      font-family: var(--font-body);
+      font-size: 15px;
+      border: 2px solid var(--att-border);
+      border-radius: var(--att-radius);
+      background: #fff;
+      color: var(--att-ink);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .att-search-input:focus {
+      border-color: var(--att-green);
+    }
+
+    .att-search-input::placeholder {
+      color: var(--att-muted);
+    }
+
+    .att-search-btn {
+      padding: 14px 20px;
+      background: var(--att-green);
+      color: #fff;
+      border: none;
+      border-radius: var(--att-radius);
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .att-search-btn:hover:not(:disabled) {
+      background: var(--att-green-lt);
+    }
+
+    .att-search-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .att-search-btn svg {
+      flex-shrink: 0;
+    }
+
+    /* ── Hints ── */
+    .att-hints {
+      max-width: 680px;
+      margin: 10px auto 0;
+      padding: 0 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .att-hint-chip {
+      font-size: 12px;
+      color: var(--att-muted);
+      background: var(--att-border);
+      border: none;
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      font-family: var(--font-body);
+    }
+
+    .att-hint-chip:hover {
+      background: var(--att-green);
+      color: #fff;
+    }
+
+    /* ── Status / Loader ── */
+    .att-status {
+      max-width: 680px;
+      margin: 20px auto 0;
+      padding: 0 16px;
+      min-height: 24px;
+    }
+
+    .att-loader {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--att-muted);
+      font-size: 14px;
+    }
+
+    .att-spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--att-border);
+      border-top-color: var(--att-green);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Clarification ── */
+    .att-clarification {
+      max-width: 680px;
+      margin: 16px auto 0;
+      padding: 0 16px;
+    }
+
+    .att-clarification-box {
+      background: #fff;
+      border: 1.5px solid var(--att-gold);
+      border-radius: var(--att-radius);
+      padding: 16px 18px;
+    }
+
+    .att-clarification-box p {
+      font-size: 14px;
+      color: var(--att-ink);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .att-clarification-box p strong {
+      color: var(--att-green);
+    }
+
+    .att-clarify-input-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .att-clarify-input {
+      flex: 1;
+      padding: 10px 14px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      border: 2px solid var(--att-border);
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .att-clarify-input:focus { border-color: var(--att-green); }
+
+    .att-clarify-btn {
+      padding: 10px 16px;
+      background: var(--att-gold);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: opacity 0.2s;
+    }
+
+    .att-clarify-btn:hover { opacity: 0.88; }
+
+    /* ── Results ── */
+    .att-results {
+      max-width: 680px;
+      margin: 20px auto 32px;
+      padding: 0 16px;
+    }
+
+    .att-results-label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--att-muted);
+      margin-bottom: 12px;
+    }
+
+    .att-card {
+      background: var(--att-card-bg);
+      border: 1px solid var(--att-border);
+      border-radius: var(--att-radius);
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      box-shadow: var(--att-shadow);
+      margin-bottom: 10px;
+      transition: box-shadow 0.2s;
+    }
+
+    .att-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.11); }
+
+    .att-card__photo {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--att-border);
+    }
+
+    .att-card__photo-placeholder {
+      width: 56px;
+      height: 56px;
+      border-radius: 8px;
+      background: var(--att-border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      color: var(--att-muted);
+    }
+
+    .att-card__body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .att-card__name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--att-ink);
+      margin-bottom: 2px;
+      line-height: 1.3;
+    }
+
+    .att-card__rating {
+      font-size: 13px;
+      color: var(--att-gold);
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+
+    .att-card__description {
+      font-size: 13px;
+      color: var(--att-muted);
+      line-height: 1.5;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .att-card__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .att-card__phone {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--att-green);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .att-card__phone:hover { text-decoration: underline; }
+
+    .att-card__link {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--att-muted);
+      text-decoration: none;
+      border: 1px solid var(--att-border);
+      padding: 3px 10px;
+      border-radius: 20px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .att-card__link:hover {
+      border-color: var(--att-green);
+      color: var(--att-green);
+    }
+
+    /* ── No Results ── */
+    .att-no-results {
+      background: #fff;
+      border: 1px solid var(--att-border);
+      border-radius: var(--att-radius);
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    .att-no-results p {
+      font-size: 15px;
+      color: var(--att-ink);
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .att-no-results__cta {
+      font-size: 13px;
+      color: var(--att-muted);
+      margin-bottom: 12px;
+    }
+
+    .att-no-results__link {
+      display: inline-block;
+      padding: 10px 20px;
+      background: var(--att-green);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: var(--font-body);
+      transition: background 0.2s;
+    }
+
+    .att-no-results__link:hover { background: var(--att-green-lt); }
+
+    /* ── Error ── */
+    .att-error {
+      background: #fff3f3;
+      border: 1px solid #fca5a5;
+      border-radius: var(--att-radius);
+      padding: 14px 16px;
+      font-size: 14px;
+      color: #b91c1c;
+    }
+
+    /* ── Footer ── */
+    .att-footer {
+      text-align: center;
+      padding: 12px 16px 20px;
+      font-size: 11px;
+      color: var(--att-muted);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 480px) {
+      .att-search-form { flex-direction: column; }
+      .att-search-btn { justify-content: center; }
+      .att-card { flex-direction: column; }
+      .att-card__photo, .att-card__photo-placeholder { width: 48px; height: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="att-header">
+    <p class="att-header__eyebrow">Tyler, TX &amp; East Texas</p>
+    <h1 class="att-header__title">Find a Local Business</h1>
+    <p class="att-header__sub">Describe what you need — or just ask.</p>
+  </header>
+
+  <div class="att-search-wrap">
+    <form class="att-search-form" id="searchForm" onsubmit="return false;">
+      <input
+        type="text"
+        class="att-search-input"
+        id="searchInput"
+        placeholder="e.g. roof leak, probate attorney, my AC quit…"
+        autocomplete="off"
+        spellcheck="true"
+        aria-label="Search for a local business or service"
+      />
+      <button type="submit" class="att-search-btn" id="searchBtn" onclick="handleSearch()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        Search
+      </button>
+    </form>
+  </div>
+
+  <div class="att-hints" id="hintsRow">
+    <button class="att-hint-chip" onclick="setQuery('plumber')">Plumber</button>
+    <button class="att-hint-chip" onclick="setQuery('my AC quit')">AC repair</button>
+    <button class="att-hint-chip" onclick="setQuery('estate attorney')">Estate attorney</button>
+    <button class="att-hint-chip" onclick="setQuery('pet sitting')">Pet sitting</button>
+    <button class="att-hint-chip" onclick="setQuery('birthday party venue')">Birthday party</button>
+    <button class="att-hint-chip" onclick="setQuery('roof repair')">Roof repair</button>
+  </div>
+
+  <div class="att-status" id="statusArea"></div>
+  <div class="att-clarification" id="clarificationArea" style="display:none;"></div>
+  <div class="att-results" id="resultsArea" style="display:none;"></div>
+
+  <footer class="att-footer">
+    Powered by All Things Tyler &nbsp;·&nbsp; Local businesses serving Tyler &amp; East Texas
+  </footer>
+
+  <script>
+    // ── Config ──────────────────────────────────────────────────────────────
+    // In production this points to your Netlify function URL.
+    // During local dev you can override: const API_URL = 'http://localhost:8888/api/search';
+    const API_URL = '/api/search';
+
+    // ── State ────────────────────────────────────────────────────────────────
+    let isLoading = false;
+    let lastQuery = '';
+
+    // ── UI Helpers ───────────────────────────────────────────────────────────
+    const $ = (id) => document.getElementById(id);
+
+    function setLoading(on) {
+      isLoading = on;
+      $('searchBtn').disabled = on;
+      $('statusArea').innerHTML = on
+        ? `<div class="att-loader"><div class="att-spinner"></div><span>Looking through the directory…</span></div>`
+        : '';
+    }
+
+    function showError(msg) {
+      $('statusArea').innerHTML = `<div class="att-error">${msg}</div>`;
+    }
+
+    function clearResults() {
+      $('resultsArea').style.display = 'none';
+      $('resultsArea').innerHTML = '';
+      $('clarificationArea').style.display = 'none';
+      $('clarificationArea').innerHTML = '';
+    }
+
+    function setQuery(q) {
+      $('searchInput').value = q;
+      handleSearch();
+    }
+
+    // ── Render Cards ─────────────────────────────────────────────────────────
+    function renderCard(biz) {
+      const photoEl = biz.photo
+        ? `<img class="att-card__photo" src="${escHtml(biz.photo)}" alt="${escHtml(biz.name)} logo" loading="lazy" onerror="this.style.display='none'" />`
+        : `<div class="att-card__photo-placeholder" aria-hidden="true">🏢</div>`;
+
+      const ratingEl = biz.rating
+        ? `<div class="att-card__rating">${escHtml(biz.rating)}</div>`
+        : '';
+
+      const descEl = biz.description
+        ? `<p class="att-card__description">${escHtml(biz.description)}</p>`
+        : '';
+
+      const phoneEl = biz.phone
+        ? `<a class="att-card__phone" href="tel:${escHtml(biz.phone.replace(/\D/g,''))}" aria-label="Call ${escHtml(biz.name)}">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.37 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56a16 16 0 0 0 6.53 6.53l1.62-1.62a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            ${escHtml(biz.phone)}
+          </a>`
+        : '';
+
+      const links = [];
+      if (biz.website) {
+        links.push(`<a class="att-card__link" href="${escHtml(biz.website)}" target="_blank" rel="noopener">Website ↗</a>`);
+      }
+      if (biz.facebook) {
+        links.push(`<a class="att-card__link" href="${escHtml(biz.facebook)}" target="_blank" rel="noopener">Facebook ↗</a>`);
+      }
+
+      const linksEl = (phoneEl || links.length)
+        ? `<div class="att-card__links">${phoneEl}${links.join('')}</div>`
+        : '';
+
+      return `
+        <article class="att-card" aria-label="${escHtml(biz.name)}">
+          ${photoEl}
+          <div class="att-card__body">
+            <div class="att-card__name">${escHtml(biz.name)}</div>
+            ${ratingEl}
+            ${descEl}
+            ${linksEl}
+          </div>
+        </article>`;
+    }
+
+    function renderResults(data) {
+      const area = $('resultsArea');
+
+      if (data.no_results || data.results.length === 0) {
+        area.innerHTML = `
+          <div class="att-no-results">
+            <p>We don't currently have a directory business listed for that service.</p>
+            <p class="att-no-results__cta">Interested in being the first business in this category?</p>
+            <a class="att-no-results__link" href="https://www.allthingstyler.com/become-a-partner-step-2#join" target="_blank" rel="noopener">
+              Join the Directory →
+            </a>
+          </div>`;
+        area.style.display = 'block';
+        return;
+      }
+
+      const label = data.results.length === 1
+        ? '1 local business found'
+        : `${data.results.length} local businesses found`;
+
+      area.innerHTML = `
+        <p class="att-results-label">${label}</p>
+        ${data.results.map(renderCard).join('')}`;
+      area.style.display = 'block';
+    }
+
+    function renderClarification(question, originalQuery) {
+      const area = $('clarificationArea');
+      area.innerHTML = `
+        <div class="att-clarification-box">
+          <p><strong>Just one quick question:</strong> ${escHtml(question)}</p>
+          <div class="att-clarify-input-row">
+            <input
+              class="att-clarify-input"
+              id="clarifyInput"
+              type="text"
+              placeholder="Type your answer…"
+              aria-label="Answer the follow-up question"
+            />
+            <button class="att-clarify-btn" onclick="handleClarify('${escAttr(originalQuery)}')">Go →</button>
+          </div>
+        </div>`;
+      area.style.display = 'block';
+
+      const ci = $('clarifyInput');
+      if (ci) {
+        ci.focus();
+        ci.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') handleClarify(originalQuery);
+        });
+      }
+    }
+
+    // ── Search Logic ─────────────────────────────────────────────────────────
+    async function handleSearch() {
+      const query = $('searchInput').value.trim();
+      if (!query || isLoading) return;
+      lastQuery = query;
+      await runSearch(query);
+    }
+
+    async function handleClarify(originalQuery) {
+      const clarifyInput = $('clarifyInput');
+      if (!clarifyInput) return;
+      const answer = clarifyInput.value.trim();
+      if (!answer) return;
+      const combined = `${originalQuery} — specifically: ${answer}`;
+      $('searchInput').value = combined;
+      await runSearch(combined);
+    }
+
+    async function runSearch(query) {
+      clearResults();
+      setLoading(true);
+      $('hintsRow').style.display = 'none';
+
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query }),
+        });
+
+        if (!res.ok) {
+          throw new Error(`Server error ${res.status}`);
+        }
+
+        const data = await res.json();
+        setLoading(false);
+
+        if (data.needs_clarification && data.clarification_question) {
+          renderClarification(data.clarification_question, query);
+        } else {
+          renderResults(data);
+        }
+
+      } catch (err) {
+        setLoading(false);
+        console.error('Search error:', err);
+        showError('Something went wrong. Please try again in a moment.');
+      }
+    }
+
+    // ── Keyboard: Enter to search ─────────────────────────────────────────────
+    $('searchInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleSearch();
+    });
+
+    // ── Escaping helpers ─────────────────────────────────────────────────────
+    function escHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function escAttr(str) {
+      return escHtml(str).replace(/'/g, "\\'");
+    }
+  </script>
+</body>
+</html>

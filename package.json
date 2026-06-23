@@ -1,0 +1,9 @@
+{
+  "name": "all-things-tyler-concierge",
+  "version": "1.0.0",
+  "description": "All Things Tyler AI Business Directory Concierge",
+  "private": true,
+  "scripts": {
+    "process-csv": "python3 scripts/process-csv.py"
+  }
+}
