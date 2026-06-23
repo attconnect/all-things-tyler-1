@@ -144,7 +144,7 @@
 <footer class="footer">Powered by All Things Tyler &nbsp;·&nbsp; Tyler &amp; East Texas</footer>
 
 <script>
-  const API = '/api/search-simple';
+  const API = '/api/search';
   let busy = false;
 
   const $  = id => document.getElementById(id);
@@ -226,7 +226,7 @@
   function renderResults(data) {
     const area = $('resultsArea');
 
-    if (data.no_results || !data.results.length) {
+    if (data.no_results || (Array.isArray(data.results) ? !data.results.length : !(data.results?.featured?.length || data.results?.primary?.length || data.results?.other?.length))) {
       area.innerHTML = `
         <div class="no-results">
           <p>We don't currently have a directory business listed for that service.</p>
@@ -240,7 +240,7 @@
     const n = data.results.length;
     area.innerHTML = `
       <p class="results-count">${n} local business${n !== 1 ? 'es' : ''} found</p>
-      ${data.results.map(renderCard).join('')}`;
+      ${(Array.isArray(data.results) ? data.results : [...(data.results.featured||[]), ...(data.results.primary||[]), ...(data.results.other||[])]).map(renderCard).join('')}`;
     area.style.display = 'block';
   }
 
