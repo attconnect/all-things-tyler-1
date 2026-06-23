@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>All Things Tyler – AI Concierge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --green:#2D6A4F;--green-lt:#40916C;--gold:#C8972B;
+      --cream:#FAF8F4;--ink:#1A1A1A;--muted:#6B7280;
+      --border:#E5E0D8;--white:#FFFFFF;--shadow:0 2px 12px rgba(0,0,0,.07);
+      --radius:12px;--font-d:'Playfair Display',Georgia,serif;--font-b:'Inter',system-ui,sans-serif;
+    }
+    body{font-family:var(--font-b);background:var(--cream);color:var(--ink);min-height:100vh}
+
+    .hdr{background:var(--green);padding:28px 24px 22px;text-align:center}
+    .hdr__eyebrow{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:6px}
+    .hdr__title{font-family:var(--font-d);font-size:clamp(22px,5vw,30px);color:#fff;line-height:1.2;margin-bottom:5px}
+    .hdr__sub{font-size:13px;color:rgba(255,255,255,.7)}
+
+    .search-wrap{max-width:680px;margin:0 auto;padding:20px 16px 0}
+    .search-row{display:flex;gap:8px}
+    .search-input{flex:1;padding:14px 18px;font-family:var(--font-b);font-size:15px;border:2px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--ink);outline:none;transition:border-color .2s}
+    .search-input:focus{border-color:var(--green)}
+    .search-input::placeholder{color:var(--muted)}
+    .search-btn{padding:14px 20px;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-family:var(--font-b);font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:7px;transition:background .2s}
+    .search-btn:hover:not(:disabled){background:var(--green-lt)}
+    .search-btn:disabled{opacity:.6;cursor:not-allowed}
+
+    .hints{max-width:680px;margin:10px auto 0;padding:0 16px;display:flex;flex-wrap:wrap;gap:7px}
+    .chip{font-size:12px;color:var(--muted);background:var(--border);border:none;border-radius:20px;padding:5px 12px;cursor:pointer;font-family:var(--font-b);transition:background .15s,color .15s}
+    .chip:hover{background:var(--green);color:#fff}
+
+    .status{max-width:680px;margin:16px auto 0;padding:0 16px;min-height:20px}
+    .loader{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:14px}
+    .spinner{width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .error-msg{background:#fff3f3;border:1px solid #fca5a5;border-radius:var(--radius);padding:12px 16px;font-size:14px;color:#b91c1c}
+
+    .intent-bar{max-width:680px;margin:12px auto 0;padding:0 16px}
+    .intent-pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--green);background:#EAF3E6;border-radius:20px;padding:4px 12px;font-weight:500}
+
+    .clarify-wrap{max-width:680px;margin:16px auto 0;padding:0 16px}
+    .clarify-box{background:#fff;border:1.5px solid var(--gold);border-radius:var(--radius);padding:16px 18px}
+    .clarify-box p{font-size:14px;color:var(--ink);margin-bottom:12px;line-height:1.5}
+    .clarify-box p strong{color:var(--green)}
+    .clarify-row{display:flex;gap:8px}
+    .clarify-input{flex:1;padding:10px 14px;font-family:var(--font-b);font-size:14px;border:2px solid var(--border);border-radius:8px;outline:none;transition:border-color .2s}
+    .clarify-input:focus{border-color:var(--green)}
+    .clarify-btn{padding:10px 16px;background:var(--gold);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-b)}
+    .clarify-btn:hover{opacity:.88}
+
+    .results{max-width:680px;margin:16px auto 32px;padding:0 16px}
+
+    .group{margin-bottom:22px}
+    .group-hdr{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+    .group-hdr.featured{color:#7B4F00;border-color:#F0D9A8}
+    .group-hdr.primary{color:var(--green);border-color:#C6E3C8}
+    .group-hdr.other{color:var(--muted);border-color:var(--border)}
+
+    .card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;gap:14px;align-items:flex-start;box-shadow:var(--shadow);margin-bottom:10px;transition:box-shadow .2s}
+    .card:hover{box-shadow:0 4px 20px rgba(0,0,0,.11)}
+    .card__photo{width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;background:var(--border)}
+    .card__placeholder{width:56px;height:56px;border-radius:8px;background:var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:22px}
+    .card__body{flex:1;min-width:0}
+    .card__name{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:2px;line-height:1.3}
+    .card__spec{font-size:12px;color:var(--green);font-weight:500;margin-bottom:4px}
+    .card__rating{font-size:13px;color:var(--gold);font-weight:500;margin-bottom:5px}
+    .card__desc{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .card__links{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+    .card__phone{font-size:13px;font-weight:500;color:var(--green);text-decoration:none;display:inline-flex;align-items:center;gap:5px}
+    .card__phone:hover{text-decoration:underline}
+    .card__btn{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;color:var(--muted);text-decoration:none;border:1px solid var(--border);padding:4px 12px;border-radius:20px;transition:border-color .15s,color .15s;white-space:nowrap}
+    .card__btn:hover{border-color:var(--green);color:var(--green)}
+
+    .no-results{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px 20px;text-align:center}
+    .no-results p{font-size:15px;color:var(--ink);margin-bottom:10px;line-height:1.5}
+    .no-results__cta{font-size:13px;color:var(--muted);margin-bottom:14px}
+    .no-results__link{display:inline-block;padding:10px 20px;background:var(--green);color:#fff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;transition:background .2s}
+    .no-results__link:hover{background:var(--green-lt)}
+
+    .footer{text-align:center;padding:10px 16px 20px;font-size:11px;color:var(--muted)}
+
+    @media(max-width:480px){
+      .search-row{flex-direction:column}
+      .search-btn{justify-content:center}
+      .card{flex-direction:column}
+      .card__photo,.card__placeholder{width:48px;height:48px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="hdr">
+  <p class="hdr__eyebrow">Tyler, TX &amp; East Texas</p>
+  <h1 class="hdr__title">Find a Local Business</h1>
+  <p class="hdr__sub">Describe what you need — or just ask.</p>
+</header>
+
+<div class="search-wrap">
+  <div class="search-row">
+    <input type="text" class="search-input" id="searchInput"
+      placeholder="e.g. roof leak, probate attorney, hair salon…"
+      autocomplete="off" aria-label="Search local businesses" />
+    <button class="search-btn" id="searchBtn" onclick="handleSearch()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      Search
+    </button>
+  </div>
+</div>
+
+<div class="hints" id="hintsRow">
+  <button class="chip" onclick="go('roof leak')">Roof leak</button>
+  <button class="chip" onclick="go('hair salon')">Hair salon</button>
+  <button class="chip" onclick="go('probate attorney')">Probate attorney</button>
+  <button class="chip" onclick="go('AC repair')">AC repair</button>
+  <button class="chip" onclick="go('pet sitting')">Pet sitting</button>
+  <button class="chip" onclick="go('2 bedroom house for rent')">House for rent</button>
+  <button class="chip" onclick="go('pressure washing')">Pressure washing</button>
+  <button class="chip" onclick="go('auto insurance')">Auto insurance</button>
+</div>
+
+<div class="status"    id="statusArea"></div>
+<div class="intent-bar" id="intentArea"  style="display:none"></div>
+<div class="clarify-wrap" id="clarifyArea" style="display:none"></div>
+<div class="results"   id="resultsArea" style="display:none"></div>
+
+<footer class="footer">Powered by All Things Tyler &nbsp;·&nbsp; Tyler &amp; East Texas</footer>
+
+<script>
+  const API = '/api/search';
+  let busy = false;
+  const $ = id => document.getElementById(id);
+
+  const ICON_PHONE = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.37 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.56a16 16 0 0 0 6.53 6.53l1.62-1.62a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>`;
+  const ICON_WEB  = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>`;
+  const ICON_FB   = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>`;
+
+  function safeUrl(url) {
+    if (!url) return null;
+    const t = url.trim();
+    if (!t) return null;
+    return (t.startsWith('http://') || t.startsWith('https://')) ? t : 'https://' + t;
+  }
+
+  function esc(s) {
+    if (!s) return '';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function setLoading(on) {
+    busy = on;
+    $('searchBtn').disabled = on;
+    $('statusArea').innerHTML = on
+      ? `<div class="loader"><div class="spinner"></div><span>Searching the directory…</span></div>` : '';
+  }
+
+  function clearAll() {
+    ['resultsArea','clarifyArea','intentArea'].forEach(id => {
+      $(id).style.display = 'none';
+      $(id).innerHTML = '';
+    });
+    $('statusArea').innerHTML = '';
+  }
+
+  function renderCard(b) {
+    const photo = b.photo
+      ? `<img class="card__photo" src="${esc(b.photo)}" alt="${esc(b.name)}" loading="lazy" onerror="this.style.display='none'" />`
+      : `<div class="card__placeholder" aria-hidden="true">🏢</div>`;
+    const spec   = b.specialization ? `<div class="card__spec">${esc(b.specialization)}</div>` : '';
+    const rating = b.rating         ? `<div class="card__rating">${esc(b.rating)}</div>` : '';
+    const desc   = b.description    ? `<p class="card__desc">${esc(b.description)}</p>` : '';
+    const phone  = b.phone          ? `<a class="card__phone" href="tel:${esc(b.phone.replace(/\D/g,''))}">${ICON_PHONE}${esc(b.phone)}</a>` : '';
+    const webUrl = safeUrl(b.website);
+    const fbUrl  = safeUrl(b.facebook);
+    const webBtn = webUrl ? `<a class="card__btn" href="${esc(webUrl)}" target="_blank" rel="noopener noreferrer">${ICON_WEB} Website</a>` : '';
+    const fbBtn  = fbUrl  ? `<a class="card__btn" href="${esc(fbUrl)}"  target="_blank" rel="noopener noreferrer">${ICON_FB} Facebook</a>` : '';
+    const links  = [phone, webBtn, fbBtn].filter(Boolean).join('');
+    return `
+      <article class="card" aria-label="${esc(b.name)}">
+        ${photo}
+        <div class="card__body">
+          <div class="card__name">${esc(b.name)}</div>
+          ${spec}${rating}${desc}
+          ${links ? `<div class="card__links">${links}</div>` : ''}
+        </div>
+      </article>`;
+  }
+
+  const GROUP_CFG = {
+    featured: { cls: 'featured', icon: '⭐', label: 'Featured Matches' },
+    primary:  { cls: 'primary',  icon: '👍', label: 'Primary Service Matches' },
+    other:    { cls: 'other',    icon: '💡', label: 'Other Businesses That Also Offer This Service' },
+  };
+
+  function renderResults(data) {
+    const area = $('resultsArea');
+    const r = data.results || {};
+    const total = (r.featured||[]).length + (r.primary||[]).length + (r.other||[]).length;
+
+    if (data.no_results || total === 0) {
+      area.innerHTML = `
+        <div class="no-results">
+          <p>We don't currently have a directory business listed for that service.</p>
+          <p class="no-results__cta">Interested in being the first business in this category?</p>
+          <a class="no-results__link" href="https://www.allthingstyler.com/become-a-partner-step-2#join" target="_blank" rel="noopener">Join the Directory →</a>
+        </div>`;
+      area.style.display = 'block';
+      return;
+    }
+
+    let html = `<p style="font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:16px">${total} local business${total!==1?'es':''} found</p>`;
+
+    for (const [key, cfg] of Object.entries(GROUP_CFG)) {
+      const list = r[key] || [];
+      if (!list.length) continue;
+      const showHeader = total > list.length; // only show group headers if multiple groups
+      html += `<div class="group">`;
+      if (showHeader) {
+        html += `<div class="group-hdr ${cfg.cls}"><span aria-hidden="true">${cfg.icon}</span> ${cfg.label}</div>`;
+      }
+      html += list.map(renderCard).join('');
+      html += `</div>`;
+    }
+
+    area.innerHTML = html;
+    area.style.display = 'block';
+  }
+
+  function renderIntent(intent) {
+    if (!intent) return;
+    $('intentArea').innerHTML = `<div class="intent-pill">🔍 Searching for: ${esc(intent)}</div>`;
+    $('intentArea').style.display = 'block';
+  }
+
+  function renderClarify(question, original) {
+    const area = $('clarifyArea');
+    area.innerHTML = `
+      <div class="clarify-box">
+        <p><strong>One quick question:</strong> ${esc(question)}</p>
+        <div class="clarify-row">
+          <input class="clarify-input" id="clarifyInput" type="text" placeholder="Type your answer…" />
+          <button class="clarify-btn" onclick="handleClarify('${esc(original).replace(/'/g,"\\'")}')">Go →</button>
+        </div>
+      </div>`;
+    area.style.display = 'block';
+    const ci = $('clarifyInput');
+    if (ci) {
+      ci.focus();
+      ci.addEventListener('keydown', e => { if (e.key==='Enter') handleClarify(original); });
+    }
+  }
+
+  function go(q) { $('searchInput').value = q; handleSearch(); }
+
+  function handleSearch() {
+    const q = $('searchInput').value.trim();
+    if (!q || busy) return;
+    runSearch(q);
+  }
+
+  function handleClarify(original) {
+    const ci = $('clarifyInput');
+    if (!ci) return;
+    const answer = ci.value.trim();
+    if (!answer) return;
+    $('searchInput').value = original + ' ' + answer;
+    runSearch($('searchInput').value.trim());
+  }
+
+  async function runSearch(query) {
+    clearAll();
+    setLoading(true);
+    $('hintsRow').style.display = 'none';
+    try {
+      const res = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query }),
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      setLoading(false);
+      if (data.needs_clarification && data.clarification_question) {
+        renderClarify(data.clarification_question, query);
+      } else {
+        if (data.intent) renderIntent(data.intent);
+        renderResults(data);
+      }
+    } catch (err) {
+      setLoading(false);
+      $('statusArea').innerHTML = `<div class="error-msg">Something went wrong. Please try again.</div>`;
+      console.error(err);
+    }
+  }
+
+  $('searchInput').addEventListener('keydown', e => { if (e.key==='Enter') handleSearch(); });
+</script>
+</body>
+</html>
